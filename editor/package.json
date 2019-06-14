@@ -1,4 +1,8 @@
 {
+  "name": "oboros-editor",
+  "author": "http://completegraph.ai@gmail.com",
+  "version": "0.0.1",
+  "main": "index.js",
   "dependencies": {
     "oboros": "^0.0.3"
   }
