@@ -1,7 +1,5 @@
 const O = require('oboros');
 
-const o = new O();
-
 const editorMinds = {
   createNewApp: () => new O(),
   loadApp: ({ o, input: app }) => {
@@ -9,6 +7,7 @@ const editorMinds = {
   },
 }
 
+const o = new O();
 o.x({ call: 'setMinds', input: editorMinds });
 const newApp = o.x({ call: 'createNewApp' });
 o.x({ call: 'loadApp', input: newApp });

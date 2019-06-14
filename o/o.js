@@ -5,7 +5,7 @@ class O {
     this.coreMinds = {
       getMatter: ({ o, input: id }) => o._o.getIn([ 'matter', id ]),
       setMatter: ({ o, input: { id, value } }) =>  o._o = o._o.setIn([ 'matter', id ], value),
-      setMinds: ({ o, input: mindMap }) => Object.entries(mindMap).forEach((id, mind) => 
+      setMinds: ({ o, input: mindMap }) => Object.entries(mindMap).forEach(([ id, mind ]) => 
         o.x({ call: 'setMind', input: { id, value: mind } })),
       setMind: ({ o, input: { id, value } }) => o._o = o._o.setIn([ 'mind', id ], value),
       _updateTime: ({ input: { o, ...e } }) => {
