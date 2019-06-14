@@ -29,4 +29,4 @@ class O {
   }
 }
 
-module.exports = { O };
+module.exports = O;
