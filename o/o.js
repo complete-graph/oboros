@@ -5,6 +5,8 @@ class O {
     this.coreMinds = {
       getMatter: ({ o, input: id }) => o._o.getIn([ 'matter', id ]),
       setMatter: ({ o, input: { id, value } }) =>  o._o = o._o.setIn([ 'matter', id ], value),
+      setMinds: ({ o, input: mindMap }) => Object.entries(mindMap).forEach((id, mind) => 
+        o.x({ call: 'setMind', input: { id, value: mind } })),
       setMind: ({ o, input: { id, value } }) => o._o = o._o.setIn([ 'mind', id ], value),
       _updateTime: ({ input: { o, ...e } }) => {
         const record = { ...e, t: Date.now() }
@@ -12,7 +14,8 @@ class O {
       },
     }
     this._o = Map({
-      x: (event) => { /// x( event: { o, call, input } )
+      /// x( event: { o: O, call: mind, input: map } )
+      x: (event) => {
         event.o._x({ call: '_updateTime', input: event });
         return event.o._x(event);
       },

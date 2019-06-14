@@ -1,6 +1,6 @@
 {
   "name": "oboros",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "http://completegraph.ai@gmail.com",
   "dependencies": {
     "immutable": "^4.0.0-rc.12"
