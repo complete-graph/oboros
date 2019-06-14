@@ -20,8 +20,8 @@ class O {
         return event.o._x(event);
       },
       mind: Map({ ...this.coreMinds }),
-      matter: Map({}),
       time: List([]),
+      matter: Map({}),
     })
   }
   _x(event) {
