@@ -1,7 +1,7 @@
 import { AppRegistry } from 'react-native';
 import * as serviceWorker from '../serviceWorker';
 import React from 'react';
-import Views from './view';
+import MainView from './view';
 
 export default {
   createUI: ({ o }) => {
@@ -12,7 +12,7 @@ export default {
         o.x({ call: 'setMind', input: { id: 'render', value: ({o}) => this.update({o}) } });
       }
       update(o) { this.setState({ o }) };
-      render() { return <Views.Main o={o}/> };
+      render() { return <MainView o={o}/> };
     }
     AppRegistry.registerComponent('RootView', () => RootView);
     AppRegistry.runApplication('RootView', {
