@@ -1,14 +1,17 @@
 import React from 'react';
-import { View, ScrollView, Text, Button, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 
 const Main = ({ o }) => {
   return (
     <View>
       <Text style={styles.heading}>Oboros Editor</Text>
-      <Matter o={o} />
-      <Time o={o} />
-      <Update o={o} />
+      <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+        <Matter o={o} />
+        <Time o={o} />
+        <Mind o={o} />
+        <MindEditor o={o} />
+      </View>
     </View>
   )
 }
@@ -24,10 +27,10 @@ const Matter = ({ o }) => {
     )
   })
   return (
-    <ScrollView style={styles.tile}>
+    <View>
       <Text style={styles.subHeading}>Matter</Text>
       {matterViews}
-    </ScrollView>
+    </View>
   )
 }
 
@@ -43,21 +46,83 @@ const Time = ({ o }) => {
     )
   })
   return (
-    <ScrollView style={styles.tile}>
+    <View>
       <Text style={styles.subHeading}>Time</Text>
       {eventViews}
-    </ScrollView>
+    </View>
   )
 }
 
-const Update = ({ o }) => {
-  return (
-    <Button title='update' onPress={() => {
-      const app = o.x({ call: 'getApp' });
-      app.x({ call: 'count' });
-      o.x({ call: 'render' });
-    }}/>
-  )
+class Mind extends React.Component {
+  constructor() {
+    super();
+    this.state = { text: '{}' };
+  }
+  render() {
+    const { o } = this.props;
+    const app = o.x({ call: 'getApp' });
+    const mind = app._o.get('mind').toJS();
+    const mindViews = Object.entries(mind).map(([ id, value ], i) => {
+      return (
+        <View key={i} style={styles.text}>
+          <Button title={id} onPress={() => callMind(o, id, this.state.text)} />
+          <TextInput
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+            onChangeText={(text) => this.setState({ text })}
+            value={this.state.text}
+          />
+          <Text>{id} : {value.toString()}</Text>
+        </View>
+      )
+    })
+    return (
+      <View>
+        <Text style={styles.subHeading}>Mind</Text>
+        <ScrollView style={styles.scrollLong}>
+          {mindViews}
+        </ScrollView>
+      </View>
+    )
+  }
+}
+
+const callMind = (o, id, value) => {
+  o.x({ call: 'app.callMind', input: { id, value } });
+  o.x({ call: 'render' });
+}
+
+class MindEditor extends React.Component {
+  constructor() {
+    super();
+    this.state = { id: '', text: '' };
+  }
+  render() {
+    const { o } = this.props;
+    return (
+      <View>
+        <Text style={styles.subHeading}>Mind Editor</Text>
+        <View style={styles.editor}>
+          <Button title='update' onPress={() => loadMind(o, this.state.id, this.state.text)} />
+          <TextInput
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+            onChangeText={(id) => this.setState({ ...this.state, id })}
+            value={this.state.id}
+          />
+          <TextInput
+            style={styles.editor}
+            multiline={true}
+            onChangeText={(text) => this.setState({ ...this.state, text })}
+            value={this.state.text}
+          />
+        </View>
+      </View>
+    )
+  }
+}
+
+const loadMind = (o, id, value) => {
+  o.x({ call: 'app.loadMind', input: { id, value } });
+  o.x({ call: 'render' });
 }
 
 const styles = StyleSheet.create({
@@ -73,10 +138,18 @@ const styles = StyleSheet.create({
     marginTop: '1rem',
     margin: 10
   },
-  tile: {
+  scroll: {
     maxHeight: '13rem',
     overflow: 'hidden',
   },
+  scrollLong: {
+    maxHeight: '35rem',
+    overflow: 'hidden',
+  },
+  editor: {
+    height: '35rem',
+    width: '20rem'
+  }
 })
 
 export default Main;
