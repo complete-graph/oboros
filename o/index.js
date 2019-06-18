@@ -1,1 +1,1 @@
-module.exports = require('./o');
+ module.exports = require('./o');

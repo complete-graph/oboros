@@ -3,7 +3,5 @@
   "author": "http://completegraph.ai@gmail.com",
   "version": "0.0.4",
   "main": "index.js",
-  "dependencies": {
-    "immutable": "^4.0.0-rc.12"
-  }
+  "license": "MIT"
 }

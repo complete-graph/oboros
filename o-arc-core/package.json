@@ -1,9 +1,9 @@
 {
-  "name": "oboros-editor",
+  "name": "o-arc-core",
   "author": "http://completegraph.ai@gmail.com",
   "version": "0.0.1",
   "main": "index.js",
   "dependencies": {
-    "oboros": "^0.0.3"
+    "oboros": "^0.0.4"
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "oboros-editor-ui",
+  "name": "o-arc",
   "author": "http://completegraph.ai@gmail.com",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -9,8 +9,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "oboros": "^0.0.3",
-    "oboros-editor": "^0.0.1",
+    "oboros": "^0.0.4",
+    "o-arc-core": "^0.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-native-web": "^0.11.4",

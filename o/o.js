@@ -1,35 +1,52 @@
-const { OrderedMap: Map, List } = require('immutable');
-
 class O {
+  
   constructor() {
-    this.coreMinds = {
-      getMatter: ({ o, input: id }) => o._o.getIn([ 'matter', id ]),
-      setMatter: ({ o, input: { id, value } }) =>  o._o = o._o.setIn([ 'matter', id ], value),
-      setMinds: ({ o, input: mindMap }) => Object.entries(mindMap).forEach(([ id, mind ]) => 
-        o.x({ call: 'setMind', input: { id, value: mind } })),
-      setMind: ({ o, input: { id, value } }) => o._o = o._o.setIn([ 'mind', id ], value),
-      _updateTime: ({ input: { o, ...e } }) => {
-        const record = { ...e, t: Date.now() }
-        o._o = o._o.set('time', o._o.get('time').push(record));
-      },
+    this._create_o();
+    this._injectCoreMinds();
+  }
+
+  _create_o() {
+    this._o = {
+
+      mind: {},
+
+      matter: {},
+
+      time: [],
+
     }
-    this._o = Map({
-      /// x( event: { o: O, call: mind, input: map } )
-      x: (event) => {
-        event.o._x({ call: '_updateTime', input: event });
-        return event.o._x(event);
+  }
+
+  _injectCoreMinds() {
+    const coreMinds = {
+
+      x: ({ o, ...event }) => {
+        o._x({ call: '_updateTime', input: { o, ...event } });
+        return o._x(event);
       },
-      mind: Map({ ...this.coreMinds }),
-      time: List([]),
-      matter: Map({}),
-    })
+      
+      _updateTime: ({ input: { o, ...event } }) => o._o.time.unshift({ ...event, t: Date.now() }),
+
+      setMind: ({ o, input: { id, value } }) => o._o.mind[id] = value,
+
+      setMinds: ({ o, input: mindMap }) => o._o.mind = { ...o._o.mind, ...mindMap },
+
+      setMatter: ({ o, input: { id, value } }) => o._o.matter[id] = value,
+
+      getMatter: ({ o, input: id }) => o._o.matter[id],
+
+    }
+    this._o.mind = { ...this._o.mind, ...coreMinds };
   }
-  _x(event) {
-    return this._o.getIn([ 'mind', event.call ])({ ...event, o: this });
-  }
+
   x(event) {
-    return this._o.get('x')({ ...event, o: this });
+    return this._o.mind.x({ ...event, o: this });
   }
+
+  _x(event) {
+    return this._o.mind[event.call]({ ...event, o: this });
+  }
+
 }
 
 module.exports = O;

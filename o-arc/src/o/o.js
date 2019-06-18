@@ -1,11 +1,11 @@
 import O from 'oboros';
-import editorMinds from 'oboros-editor';
-import editorUIMinds from './minds';
+import architectMinds from 'o-arc-core';
+import architectUIMinds from './minds';
 
 const ox = () => {
   const o = new O();
-  o.x({ call: 'setMinds', input: editorMinds });
-  o.x({ call: 'setMinds', input: editorUIMinds });
+  o.x({ call: 'setMinds', input: architectMinds });
+  o.x({ call: 'setMinds', input: architectUIMinds });
   const newApp = o.x({ call: 'createNewApp' });
   o.x({ call: 'loadApp', input: newApp });
   setupApp(o);

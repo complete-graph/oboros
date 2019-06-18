@@ -1,6 +1,6 @@
 const O = require('oboros');
 
-const editorMinds = {
+const architectMinds = {
   'app.callMind': ({ o, input: { id, value: eventString } }) => {
     const event = o.x({ call: 'parseJS', input: eventString });
     const app = o.x({ call: 'getApp' });
@@ -19,4 +19,4 @@ const editorMinds = {
   createNewApp: () => new O(),
 }
 
-module.exports = editorMinds;
+module.exports = architectMinds;

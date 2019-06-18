@@ -18,7 +18,7 @@ const Main = ({ o }) => {
 
 const Matter = ({ o }) => {
   const app = o.x({ call: 'getApp' });
-  const matter = app._o.get('matter').toJS();
+  const matter = app._o.matter;
   const matterViews = Object.entries(matter).map(([ id, value ], i) => {
     return (
       <View key={i} style={styles.text}>
@@ -36,7 +36,7 @@ const Matter = ({ o }) => {
 
 const Time = ({ o }) => {
   const app = o.x({ call: 'getApp' });
-  const events = app._o.get('time').reverse().toJS();
+  const events = app._o.time;
   const eventViews = events.map((e, i) => {
     return (
       <View key={i} style={styles.text}>
@@ -61,7 +61,7 @@ class Mind extends React.Component {
   render() {
     const { o } = this.props;
     const app = o.x({ call: 'getApp' });
-    const mind = app._o.get('mind').toJS();
+    const mind = app._o.mind;
     const mindViews = Object.entries(mind).map(([ id, value ], i) => {
       return (
         <View key={i} style={styles.text}>
