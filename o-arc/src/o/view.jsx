@@ -134,15 +134,24 @@ class MindEditor extends React.Component {
     );
     // x macro
     // o.x macro
-    const xRegex = /\ *x [^\s]* .*/;
+    //const xRegex = /\ *x [^\s]* .*/;
     let jsLines = js.split(/\r?\n/);
     jsLines = jsLines.map((line) => {
-      const xMatch = xRegex.test(line);
+      /* const xMatch = xRegex.test(line);
       if(xMatch) { // found x match
         const symbols = line.split(' ').reverse();
         const mindId = symbols[1];
         const input = symbols[0];
         line = `o.x({ call: '${mindId}', input: ${input} });`;
+      } */
+      const xIndex = line.indexOf('x ');
+      if(xIndex > -1) {
+        const mindIdStartIndex = xIndex + 2;
+        const mindIdString = line.slice(mindIdStartIndex);
+        const mindIdArray = mindIdString.split(' ');
+        const mindId = mindIdArray[0];
+        const input = mindIdArray.slice(1).join(' ');
+        line = `  o.x({ call: '${mindId}', input: ${input} });`;
       }
       return line;
     })
