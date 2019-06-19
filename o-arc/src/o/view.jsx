@@ -1,14 +1,13 @@
 import React from 'react';
-import { View, ScrollView, Text as ReactText, TextInput, Button as ReactButton, StyleSheet } from 'react-native';
-import brace from 'brace';
+import { View, ScrollView, Text as ReactText, Button as ReactButton, StyleSheet } from 'react-native';
 import CodeEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_dark';
 
 import prettier from "prettier/standalone";
-import babylon from "prettier/parser-babylon";
-const prettierPlugins = [ babylon ];
-const formatJS = (jsString) => prettier.format(jsString, { parser: 'babylon', plugins: prettierPlugins });
+import babel from "prettier/parser-babylon";
+const prettierPlugins = [ babel ];
+const formatJS = (jsString) => prettier.format(jsString, { parser: 'babel', plugins: prettierPlugins });
 
 const Main = ({ o }) => {
   return (
@@ -206,8 +205,6 @@ class MindEditor extends React.Component {
             name="o-lang-editor"
             theme="solarized_dark"
             tabSize={2}
-            enableBasicAutocompletion={true}
-            enableLiveAutocompletion={true}
             editorProps={{$blockScrolling: true}}
             value={this.state.oLang}
             onChange={(text) => this.oChange(text)}
@@ -218,8 +215,6 @@ class MindEditor extends React.Component {
             mode="javascript"
             theme="solarized_dark"
             tabSize={2}
-            enableBasicAutocompletion={true}
-            enableLiveAutocompletion={true}
             editorProps={{$blockScrolling: true}}
             value={this.state.js}
             onChange={(text) => this.jsChange(text)}
