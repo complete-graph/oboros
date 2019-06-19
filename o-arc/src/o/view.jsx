@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, ScrollView, Text, TextInput, Button, StyleSheet } from 'react-native';
-
+import brace from 'brace';
+import CodeEditor from 'react-ace';
+import 'brace/mode/javascript';
+import 'brace/theme/solarized_dark';
 
 const Main = ({ o }) => {
   return (
@@ -94,8 +97,21 @@ const callMind = (o, id, value) => {
 class MindEditor extends React.Component {
   constructor() {
     super();
-    this.state = { id: '', text: '' };
+    this.state = { id: '', text: '', js: '', oLang: '' };
   }
+
+  jsToO(js) {
+
+  }
+
+  oChange(oLang) {
+    this.setState({ oLang, js: oLang.replace('o', 'o.x({ call: ') });
+  }
+
+  jsChange(js) {
+    this.setState({ js, oLang: js.replace('const', '') });
+  }
+
   render() {
     const { o } = this.props;
     return (
@@ -108,11 +124,20 @@ class MindEditor extends React.Component {
             onChangeText={(id) => this.setState({ ...this.state, id })}
             value={this.state.id}
           />
-          <TextInput
-            style={styles.editor}
-            multiline={true}
-            onChangeText={(text) => this.setState({ ...this.state, text })}
-            value={this.state.text}
+          <CodeEditor
+            name="o-lang-editor"
+            theme="solarized_dark"
+            editorProps={{$blockScrolling: true}}
+            value={this.state.oLang}
+            onChange={(text) => this.oChange(text)}
+          />
+          <CodeEditor
+            name="javascript-editor"
+            mode="javascript"
+            theme="solarized_dark"
+            editorProps={{$blockScrolling: true}}
+            value={this.state.js}
+            onChange={(text) => this.jsChange(text)}
           />
         </View>
       </View>
