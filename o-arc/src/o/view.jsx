@@ -73,7 +73,7 @@ class Mind extends React.Component {
     const { o } = this.props;
     const app = o.x({ call: 'getApp' });
     const mind = app._o.mind;
-    const mindViews = Object.entries(mind).map(([ id, value ], i) => {
+    const mindViews = Object.entries(mind).reverse().map(([ id, value ], i) => {
       return (
         <View key={i} style={styles.item}>
           <SubSubHeader>{id}</SubSubHeader>
