@@ -1,14 +1,19 @@
 import React from 'react';
-import { View, ScrollView, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, ScrollView, Text as ReactText, TextInput, Button as ReactButton, StyleSheet } from 'react-native';
 import brace from 'brace';
 import CodeEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_dark';
 
+import prettier from "prettier/standalone";
+import babylon from "prettier/parser-babylon";
+const prettierPlugins = [ babylon ];
+const formatJS = (jsString) => prettier.format(jsString, { parser: 'babylon', plugins: prettierPlugins });
+
 const Main = ({ o }) => {
   return (
-    <View>
-      <Text style={styles.heading}>Oboros Editor</Text>
+    <View style={styles.main}>
+      <Header>Oboros Editor</Header>
       <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
         <Matter o={o} />
         <Time o={o} />
@@ -24,15 +29,17 @@ const Matter = ({ o }) => {
   const matter = app._o.matter;
   const matterViews = Object.entries(matter).map(([ id, value ], i) => {
     return (
-      <View key={i} style={styles.text}>
+      <View key={i} style={styles.item}>
         <Text>{id} : {JSON.stringify(value)}</Text>
       </View>
     )
   })
   return (
-    <View>
-      <Text style={styles.subHeading}>Matter</Text>
-      {matterViews}
+    <View style={styles.window}>
+      <SubHeader>Matter</SubHeader>
+      <View style={styles.textArea}>
+        {matterViews}
+      </View>
     </View>
   )
 }
@@ -42,16 +49,18 @@ const Time = ({ o }) => {
   const events = app._o.time;
   const eventViews = events.map((e, i) => {
     return (
-      <View key={i} style={styles.text}>
+      <View key={i} style={styles.item}>
         <Text>{e.call} - {e.t}</Text>
         <Text>input: {JSON.stringify(e.input)}</Text>
       </View>
     )
   })
   return (
-    <View>
-      <Text style={styles.subHeading}>Time</Text>
-      {eventViews}
+    <View style={styles.window}>
+      <SubHeader>Time</SubHeader>
+      <View style={styles.textArea}>
+        {eventViews}
+      </View>
     </View>
   )
 }
@@ -59,7 +68,7 @@ const Time = ({ o }) => {
 class Mind extends React.Component {
   constructor() {
     super();
-    this.state = { text: '{}' };
+    this.state = { text: '{  }' };
   }
   render() {
     const { o } = this.props;
@@ -67,20 +76,38 @@ class Mind extends React.Component {
     const mind = app._o.mind;
     const mindViews = Object.entries(mind).map(([ id, value ], i) => {
       return (
-        <View key={i} style={styles.text}>
-          <Button title={id} onPress={() => callMind(o, id, this.state.text)} />
-          <TextInput
-            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-            onChangeText={(text) => this.setState({ text })}
+        <View key={i} style={styles.item}>
+          <SubSubHeader>{id}</SubSubHeader>
+          <Button title={id} onPress={() => callMind(o, id, this.state.text)} uppercase={false} />
+          <Text>Input</Text>
+          <CodeEditor
+            mode="javascript"
+            theme="solarized_dark"
+            showGutter={false}
+            wrapEnabled={true}
+            editorProps={{$blockScrolling: true}}
+            minLines={3}
+            maxLines={5}
             value={this.state.text}
+            onChange={(text) => this.setState({ text })}
           />
-          <Text>{id} : {value.toString()}</Text>
+          <Text>Code</Text>
+          <CodeEditor
+            mode="javascript"
+            theme="solarized_dark"
+            showGutter={false}
+            wrapEnabled={true}
+            editorProps={{$blockScrolling: true}}
+            value={formatJS(value.toString())}
+            readOnly={true}
+            maxLines={5}
+          />
         </View>
       )
     })
     return (
-      <View>
-        <Text style={styles.subHeading}>Mind</Text>
+      <View style={styles.window}>
+        <SubHeader>Mind</SubHeader>
         <ScrollView style={styles.scrollLong}>
           {mindViews}
         </ScrollView>
@@ -115,29 +142,44 @@ class MindEditor extends React.Component {
   render() {
     const { o } = this.props;
     return (
-      <View>
-        <Text style={styles.subHeading}>Mind Editor</Text>
+      <View style={styles.window}>
+        <SubHeader>Mind Editor</SubHeader>
         <View style={styles.editor}>
-          <Button title='update' onPress={() => loadMind(o, this.state.id, this.state.text)} />
-          <TextInput
-            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-            onChangeText={(id) => this.setState({ ...this.state, id })}
-            value={this.state.id}
-          />
+          <Button title='update' onPress={() => loadMind(o, this.state.id, this.state.js)} />
+          <Text>Mind</Text>
           <CodeEditor
-            name="o-lang-editor"
+            mode="javascript"
             theme="solarized_dark"
+            showGutter={false}
+            wrapEnabled={true}
             editorProps={{$blockScrolling: true}}
-            value={this.state.oLang}
-            onChange={(text) => this.oChange(text)}
+            minLines={3}
+            maxLines={5}
+            value={this.state.id}
+            onChange={(id) => this.setState({ ...this.state, id })}
           />
+          <Text>JS</Text>
           <CodeEditor
             name="javascript-editor"
             mode="javascript"
             theme="solarized_dark"
+            tabSize={2}
+            enableBasicAutocompletion={true}
+            enableLiveAutocompletion={true}
             editorProps={{$blockScrolling: true}}
             value={this.state.js}
             onChange={(text) => this.jsChange(text)}
+          />
+          <Text>O Lang</Text>
+          <CodeEditor
+            name="o-lang-editor"
+            theme="solarized_dark"
+            tabSize={2}
+            enableBasicAutocompletion={true}
+            enableLiveAutocompletion={true}
+            editorProps={{$blockScrolling: true}}
+            value={this.state.oLang}
+            onChange={(text) => this.oChange(text)}
           />
         </View>
       </View>
@@ -150,18 +192,51 @@ const loadMind = (o, id, value) => {
   o.x({ call: 'render' });
 }
 
+const Text = (props) => <ReactText style={styles.text}>{props.children}</ReactText>
+
+const Header = (props) => <ReactText style={styles.header}>{props.children}</ReactText>
+
+const SubHeader = (props) => <ReactText style={styles.subHeader}>{props.children}</ReactText>
+
+const SubSubHeader = (props) => <ReactText style={styles.subSubHeader}>{props.children}</ReactText>
+
+const Button = (props) => <ReactButton style={styles.button} color='#038796' {...props}/>
+
+
 const styles = StyleSheet.create({
-  heading: {
+  main: {
+    height: '100vh',
+    width: '100vw',
+    backgroundColor: '#01313F',
+  },
+  window: {
+    margin: '0.5rem'
+  },
+  textArea: {
+    backgroundColor: '#002B36',
+  },
+  header: {
     color: 'gray',
     fontSize: '2rem'
   },
-  subHeading: {
+  subHeader: {
     color: 'gray',
     fontSize: '1.4rem'
   },
+  subSubHeader: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '1.2rem'
+  },
   text: {
+    color: 'white',
+  },
+  item: {
     marginTop: '1rem',
     margin: 10
+  },
+  button: {
+    backgroundColor: 'green',
   },
   scroll: {
     maxHeight: '13rem',
@@ -174,7 +249,7 @@ const styles = StyleSheet.create({
   editor: {
     height: '35rem',
     width: '20rem'
-  }
+  },
 })
 
 export default Main;
