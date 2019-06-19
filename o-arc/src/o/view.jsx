@@ -13,7 +13,7 @@ const formatJS = (jsString) => prettier.format(jsString, { parser: 'babylon', pl
 const Main = ({ o }) => {
   return (
     <View style={styles.main}>
-      <Header>Oboros Editor</Header>
+      <Header>O-Arc</Header>
       <View style={{ flexDirection: 'row', alignItems: 'stretch' }}>
         <Matter o={o} />
         <Time o={o} />
@@ -108,7 +108,7 @@ class Mind extends React.Component {
     return (
       <View style={styles.window}>
         <SubHeader>Mind</SubHeader>
-        <ScrollView style={styles.scrollLong}>
+        <ScrollView style={styles.scrollLong} indicatorStyle='white'>
           {mindViews}
         </ScrollView>
       </View>
@@ -127,16 +127,59 @@ class MindEditor extends React.Component {
     this.state = { id: '', text: '', js: '', oLang: '' };
   }
 
-  jsToO(js) {
-
-  }
-
   oChange(oLang) {
-    this.setState({ oLang, js: oLang.replace('o', 'o.x({ call: ') });
+    // mind macro
+    let js = oLang.replace(
+      /\bmind\b/, 
+      '({ o, input, ...event }) =>'
+    );
+    // x macro
+    // o.x macro
+    const xRegex = /\ *x [^\s]* .*/;
+    let jsLines = js.split(/\r?\n/);
+    jsLines = jsLines.map((line) => {
+      const xMatch = xRegex.test(line);
+      if(xMatch) { // found x match
+        const symbols = line.split(' ').reverse();
+        const mindId = symbols[1];
+        const input = symbols[0];
+        line = `o.x({ call: '${mindId}', input: ${input} });`;
+      }
+      return line;
+    })
+    js = jsLines.join('\n');
+
+    this.setState({ oLang, js });
   }
 
   jsChange(js) {
-    this.setState({ js, oLang: js.replace('const', '') });
+    // mind macro
+    let oLang = js.replace(/\( *{ *\o *,.*\=>/, 'mind');
+    // o.x macro
+    const beforeString = "o.x({ call: '";
+    const middleString = "', input: ";
+    const endString =  " });"
+    let oLangLines = oLang.split(/\r?\n/);
+    oLangLines = oLangLines.map((line) => {
+      const beforeStringIndex = line.indexOf(beforeString);
+      const middleStringIndex = line.indexOf(middleString);
+      const endStringIndex = line.indexOf(endString);
+      if(beforeStringIndex > -1 && middleStringIndex > -1) { // found o.x match
+        const mindIdStartIndex = beforeString.length;
+        const mindIdEndIndex = middleStringIndex;
+        const mindId = line.substring(mindIdStartIndex, mindIdEndIndex);
+        const inputStartIndex = middleStringIndex + middleString.length;
+        const inputEndIndex = endStringIndex;
+        const input = line.substring(inputStartIndex, inputEndIndex);
+        line = line.replace(beforeString, 'x ');
+        line = line.replace(middleString, ' ');
+        line = line.replace(endString, '');
+      }
+      return line;
+    })
+    oLang = oLangLines.join('\n');
+
+    this.setState({ js, oLang });
   }
 
   render() {
@@ -158,6 +201,17 @@ class MindEditor extends React.Component {
             value={this.state.id}
             onChange={(id) => this.setState({ ...this.state, id })}
           />
+          <Text>O Lang</Text>
+          <CodeEditor
+            name="o-lang-editor"
+            theme="solarized_dark"
+            tabSize={2}
+            enableBasicAutocompletion={true}
+            enableLiveAutocompletion={true}
+            editorProps={{$blockScrolling: true}}
+            value={this.state.oLang}
+            onChange={(text) => this.oChange(text)}
+          />
           <Text>JS</Text>
           <CodeEditor
             name="javascript-editor"
@@ -169,17 +223,6 @@ class MindEditor extends React.Component {
             editorProps={{$blockScrolling: true}}
             value={this.state.js}
             onChange={(text) => this.jsChange(text)}
-          />
-          <Text>O Lang</Text>
-          <CodeEditor
-            name="o-lang-editor"
-            theme="solarized_dark"
-            tabSize={2}
-            enableBasicAutocompletion={true}
-            enableLiveAutocompletion={true}
-            editorProps={{$blockScrolling: true}}
-            value={this.state.oLang}
-            onChange={(text) => this.oChange(text)}
           />
         </View>
       </View>
@@ -225,7 +268,6 @@ const styles = StyleSheet.create({
   },
   subSubHeader: {
     color: 'white',
-    fontWeight: 'bold',
     fontSize: '1.2rem'
   },
   text: {
