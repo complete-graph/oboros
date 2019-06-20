@@ -1,7 +1,7 @@
 {
   "name": "o-arc-core",
   "author": "http://completegraph.ai@gmail.com",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "index.js",
   "dependencies": {
     "oboros": "^0.0.4"
